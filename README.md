@@ -1,4 +1,6 @@
-# this repository includes a collection of functions to assess recent usage statistics on Slurm-based resources. It contains a mixture of existing open source tools developed elsewhere, and functions developed by CU Boulder Research Computing.  Available commands include:
+### Slurmtools
+
+This repository includes a collection of functions to assess recent usage statistics on Slurm-based resources. It contains a mixture of existing open source tools developed elsewhere, and functions developed by CU Boulder Research Computing.  Available commands include:
 
  'suacct' (SU usage for each user of a specified account over N days)
 
