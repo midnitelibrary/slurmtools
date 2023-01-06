@@ -1,0 +1,43 @@
+#!/bin/bash
+# List current Slurm LevelFS from userid
+#
+#last modified 2021-06-02 (Frahm, Monaghan)
+#
+function usage()
+{
+        cat <<EOF
+Purpose: This function shows the current fair share priority of a specified user.
+A value of 1 indicates average priority compared to other users in an account.
+A value of < 1 indicates lower than average priority
+	(longer than average queue waits)
+A value of > 1 indicates higher than average priority
+	(shorter than average queue waits)
+
+Usage: levelfs [userid]
+Hint: levelfs ralphie
+EOF
+}
+
+while getopts "h" options; do
+     usage
+     exit 1
+done
+
+# Test for no command line input
+if [ $# -eq 0 ]
+  then
+    usage
+    exit 1
+fi
+
+# Test for no Slurm module or native slurm
+if [[ $(which squeue 2>&1 |grep "no squeue") ]];
+  then
+    echo "Slum required, please load a Slurm module and try again."
+    exit 1
+fi
+
+user=$1
+echo $user
+if [[ $user == *"@"* ]]; then match=`echo $user| awk -F@ '{print $1}'` ; else match=$user; fi
+sshare -l -u $1 |grep "$(echo $match | cut -c 1-8)" |awk '{if ($9 ~ /c/) print $1,"LevelFS:not set";  else print $1,"LevelFS:",$9}'
