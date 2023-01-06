@@ -6,7 +6,7 @@ This repository includes a collection of functions to assess recent usage statis
 
  'suuser' (SU usage for a specfied user over N days)
 
- 'seff' (CPU and RAM efficiency for a specified job; contribued by [Slurm](https://github.com/SchedMD/slurm/blob/master/contribs/seff/seff))
+ 'seff' (CPU and RAM efficiency for a specified job; contribued by [Slurm](https://github.com/SchedMD/slurm/blob/master/contribs/seff/seff) and originally developed by Princeton University RC)
 
  'jobstats' (job statistics for all jobs run by a specified user over N days)
 
