@@ -38,4 +38,4 @@ if [[ -z $2 ]]; then days=30; else days=$2;fi
 user=$1
 if [[ $user == *"@"* ]]; then match=`echo $user| awk -F@ '{print $1}'` ; else match=$user; fi
 echo "SU used by user $user in the last $days days:"
-sreport -t hours -P cluster AccountUtilizationByUser start=`date +%Y-%m-%d -d "$days days ago"` tree user=$user -p |sed 1,4d
+sreport -t hours -T billing -P cluster AccountUtilizationByUser start=`date +%Y-%m-%d -d "$days days ago"` tree user=$user -p |sed 1,4d
