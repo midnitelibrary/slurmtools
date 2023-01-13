@@ -37,4 +37,4 @@ if [[ -z $2 ]]; then days=30; else days=$2;fi
 acct=$1
 # do not need # if [[ $acct == *"@"* ]]; then match=`echo $user| awk -F@ '{print $1}'` ; else match=$user; fi
 echo "SU used by account (allocation) $acct in the last $days days:"
-sreport  -t hours -P cluster AccountUtilizationByUser start=`date +%Y-%m-%d -d "$days days ago"` tree acct=$acct |sed 1,4d
+sreport  -t hours -T billing -P cluster AccountUtilizationByUser start=`date +%Y-%m-%d -d "$days days ago"` tree acct=$acct |sed 1,4d
