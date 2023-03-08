@@ -39,8 +39,8 @@ echo "job stats for user $1 over past $2 days"
 echo "jobid        jobname  partition    qos          account      cpus state    start-date-time     elapsed    wait"
 echo "-------------------------------------------------------------------------------------------------------------------"
 
-sacct --user=$1 --starttime=`date +%Y-%m-%d -d "$days days ago"` --format=jobid,jobname,partition,qos,account,alloccpus,state,submit,start,elapsed |grep -v batch |grep -v extern |grep -v proxy |grep -v Unknown |grep -v Submit |grep -v "\-\-\-" > tempfilejs.txt
-input=tempfilejs.txt
+sacct --user=$1 --starttime=`date +%Y-%m-%d -d "$days days ago"` --format=jobid,jobname,partition,qos,account,alloccpus,state,submit,start,elapsed |grep -v batch |grep -v extern |grep -v proxy |grep -v Unknown |grep -v Submit |grep -v "\-\-\-" > /tmp/tempfilejs.txt
+input=/tmp/tempfilejs.txt
 
 while read line
 do
@@ -48,4 +48,4 @@ time1=$(echo $line | cut -d' ' -f8 |sed 's/T/ /g')
 time2=$(echo $line | cut -d' ' -f9 |sed 's/T/ /g')
 echo "$(echo $line | awk '{printf "%-12.12s %-8.8s %-12.12s %-12.12s %-12.12s %-4.4s %-8.8s %-19.19s %-10.10s\n", $1,$2,$3,$4,$5,$6,$7,$9,$10}') $(( $(( $(date -d "$time1" '+%s') - $(date -d "$time2" '+%s') )) / -3600)) hrs"
 done < "$input"
-rm tempfilejs.txt
+rm /tmp/tempfilejs.txt
