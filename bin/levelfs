@@ -60,19 +60,3 @@ userlevelfs=$(sshare -l -u $1 --account=${uacct} -o account,user,levelfs --nohea
 printf  "%-20s%-20s%-20s%-20s\n" "$uacct" "$userlevelfs" "$instlevelfs"
 done
 #sshare -l -u $1 |grep "$(echo $match | cut -c 1-8)" |awk '{if ($9 ~ /c/) print $1,"LevelFS:not set";  else print $1,"LevelFS:",$9}'
-  then
-    usage
-    exit 1
-fi
-
-# Test for no Slurm module or native slurm
-if [[ $(which squeue 2>&1 |grep "no squeue") ]];
-  then
-    echo "Slum required, please load a Slurm module and try again."
-    exit 1
-fi
-
-user=$1
-echo $user
-if [[ $user == *"@"* ]]; then match=`echo $user| awk -F@ '{print $1}'` ; else match=$user; fi
-sshare -l -u $1 |grep "$(echo $match | cut -c 1-8)" |awk '{if ($9 ~ /c/) print $1,"LevelFS:not set";  else print $1,"LevelFS:",$9}'
