@@ -1,17 +1,20 @@
 #!/bin/bash
 # List current Slurm LevelFS from userid
 #
-#last modified 2021-06-02 (Frahm, Monaghan)
+#last modified 2023-05-23 (Monaghan)
 #
 function usage()
 {
         cat <<EOF
-Purpose: This function shows the current fair share priority of a specified user.
-A value of 1 indicates average priority compared to other users in an account.
-A value of < 1 indicates lower than average priority
+Purpose: This function shows the current fair share priority of a specified user and their institution.
+A value of 1 indicates actual usage matches expected usage.
+A value of < 1 indicates actual usage is more than expected usage.
 	(longer than average queue waits)
-A value of > 1 indicates higher than average priority
+A value of > 1 indicates actual usage is less than expected usage
 	(shorter than average queue waits)
+Note: It is possible to have high priority in a given account
+      and low priority for your institution as a whole, and vise-versa.
+      Both numbers affect your queue wait times. 
 
 Usage: levelfs [userid]
 Hint: levelfs ralphie
@@ -25,6 +28,38 @@ done
 
 # Test for no command line input
 if [ $# -eq 0 ]
+  then
+    usage
+    exit 1
+fi
+
+# Test for no Slurm module or native slurm
+if [[ $(which squeue 2>&1 |grep "no squeue") ]];
+  then
+    echo "Slum required, please load a Slurm module and try again."
+    exit 1
+fi
+
+user=$1
+inst=$(sacctmgr show associations user=$1 -p cluster=alpine |grep ^alpine |grep general |awk -F"|" '{print $2}' |awk -F"-" '{print $1}')
+echo ""
+echo LevelFS for user "$user" and institution "$inst":
+echo ""
+#printf  "%-20s%-20s%-20s%-20s\n" "Account" "LevelFS_Inst" "LevelFS_Acct" "LevelFS_User"
+#echo "-----------------------------------------------------"
+printf  "%-20s%-20s%-20s\n" "Account" "LevelFS_User" "LevelFS_Inst"
+echo "-----------------------------------------------------"
+if [[ $user == *"@"* ]]; then match=`echo $user| awk -F@ '{print $1}'` ; else match=$user; fi
+instacct=$(sshare -l -u $1 |grep "$(echo $match | cut -c 1-8)" |awk '{print $1}' |grep general | awk -F"-" '{print $1}')
+instlevelfs=$(sshare -l -u $1 --account=${instacct} -o account,levelfs --noheader -P |grep ^${uacct} |awk -F"|" '{print $2}')
+for uacct in $(sshare -l -u $1 |grep "$(echo $match | cut -c 1-8)" |awk '{print $1}')
+do
+acctlevelfs=$(sshare -l -u $1 --account=${uacct} -o account,user,levelfs --noheader -P |grep ^${uacct} |awk -F"|" '{print $3}')
+userlevelfs=$(sshare -l -u $1 --account=${uacct} -o account,user,levelfs --noheader -P |grep "$(echo $match | cut -c 1-8)" |awk -F"|" '{print $3}')
+#printf  "%-20s%-20s%-20s%-20s\n" "$uacct" "$instlevelfs" "$acctlevelfs" "$userlevelfs"
+printf  "%-20s%-20s%-20s%-20s\n" "$uacct" "$userlevelfs" "$instlevelfs"
+done
+#sshare -l -u $1 |grep "$(echo $match | cut -c 1-8)" |awk '{if ($9 ~ /c/) print $1,"LevelFS:not set";  else print $1,"LevelFS:",$9}'
   then
     usage
     exit 1
